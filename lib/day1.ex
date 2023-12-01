@@ -17,6 +17,7 @@ defmodule Day1 do
     lines
     #|> IO.inspect(label: "original", width: 10)
     |> Enum.map(fn line -> replace_num_string(line) end)
+    |> Enum.map(fn line -> replace_num_string(line) end)
     #|> IO.inspect(label: "all num", width: 10)
     |> Enum.map(fn line -> line_to_numbers(line) end)
     #|> IO.inspect(limit: :infinity, width: 3)
@@ -24,27 +25,27 @@ defmodule Day1 do
   end
 
   @str_to_num %{
-    "one" => 1,
-    "two" => 2,
-    "three" => 3,
-    "four" => 4,
-    "five" => 5,
-    "six" => 6,
-    "seven" => 7,
-    "eight" => 8,
-    "nine" => 9
+    "one" => "1ne",
+    "two" => "2wo",
+    "three" => "3hree",
+    "four" => "4our",
+    "five" => "5ive",
+    "six" => "6ix",
+    "seven" => "7even",
+    "eight" => "8ight",
+    "nine" => "9ine"
   }
 
-  defp replace_num_string(line) do
+  def replace_num_string(line) do
     line
     |> String.replace(Map.keys(@str_to_num), fn match ->
       Map.get(@str_to_num, match) |> to_string()
     end)
   end
 
-  defp line_to_numbers(""), do: 0
+  def line_to_numbers(""), do: 0
 
-  defp line_to_numbers(line) do
+  def line_to_numbers(line) do
     line
     |> String.graphemes()
     |> Enum.filter(fn ch ->

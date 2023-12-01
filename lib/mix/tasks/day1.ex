@@ -28,8 +28,8 @@ defmodule Mix.Tasks.Day1 do
     IO.puts(
       [
         "Solution part 2:\n",
-        :red,
-        "#{solution_2} - Wrong! too high",
+        :green,
+        "#{solution_2}",
         :reset
       ]
       |> IO.ANSI.format()

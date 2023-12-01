@@ -24,6 +24,18 @@ defmodule Day1Test do
     assert got == want
   end
 
+  test "check line 111" do
+    line_111 = "ninexzhtqsr6hnftrbbnsevensevenoneightq"
+    got = 
+      line_111
+      |> Day1.replace_num_string()
+      |> Day1.replace_num_string()
+      |> IO.inspect()
+      |> Day1.line_to_numbers()
+    want = 98
+    assert got == want
+  end
+
   test "example part 2" do
     got = Day1.decrypt_calibration_2(@example_input_2)
     want = 281

@@ -15,9 +15,11 @@ defmodule Day1 do
       |> String.split("\n")
 
     lines
+    #|> IO.inspect(label: "original", width: 10)
     |> Enum.map(fn line -> replace_num_string(line) end)
+    #|> IO.inspect(label: "all num", width: 10)
     |> Enum.map(fn line -> line_to_numbers(line) end)
-    |> IO.inspect(limit: :infinity)
+    #|> IO.inspect(limit: :infinity, width: 3)
     |> Enum.reduce(0, fn num, acc -> acc + num end)
   end
 

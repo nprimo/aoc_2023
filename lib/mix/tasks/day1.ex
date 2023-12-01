@@ -5,15 +5,35 @@ defmodule Mix.Tasks.Day1 do
   @impl Mix.Task
   def run(_args) do
     fname = "./data/day1.txt"
+
     solution_1 =
       File.read!(fname)
       |> Day1.decrypt_calibration_1()
 
-    solution_2 = 
+    solution_2 =
       File.read!(fname)
       |> Day1.decrypt_calibration_2()
 
-    IO.puts("Solution part 1:\n#{solution_1}")
-    IO.puts("Solution part 2:\n#{solution_2}")
+    IO.puts(
+      [
+        "Solution part 1:\n",
+        :green,
+        "#{solution_1}",
+        :reset
+      ]
+      |> IO.ANSI.format()
+      |> IO.chardata_to_string()
+    )
+
+    IO.puts(
+      [
+        "Solution part 2:\n",
+        :red,
+        "#{solution_2} - Wrong! too high",
+        :reset
+      ]
+      |> IO.ANSI.format()
+      |> IO.chardata_to_string()
+    )
   end
 end

@@ -1,7 +1,6 @@
 defmodule Mix.Tasks.Day1 do
   use Mix.Task
 
-  # TODO: create an utils to perfrom this operation
   @impl Mix.Task
   def run(_args) do
     fname = "./data/day1.txt"

@@ -14,6 +14,34 @@ defmodule Day2 do
     |> Enum.reduce(0, fn id, acc -> id + acc end)
   end
 
+  def solver2(input) do
+    input
+    |> String.trim_trailing()
+    |> String.split("\n")
+    |> Enum.map(fn game -> parse_game(game) end)
+    |> Enum.map(fn game -> get_least_cubes(Map.get(game, "rounds")) end)
+    |> Enum.reduce(0, fn id, acc -> id + acc end)
+  end
+
+  defp get_least_cubes(rounds) do
+    max_green =
+      rounds
+      |> List.foldl([], fn round, acc -> acc ++ [Map.get(round, "green", 1)] end)
+      |> Enum.max()
+
+    max_red =
+      rounds
+      |> List.foldl([], fn round, acc -> acc ++ [Map.get(round, "red", 1)] end)
+      |> Enum.max()
+
+    max_blue =
+      rounds
+      |> List.foldl([], fn round, acc -> acc ++ [Map.get(round, "blue", 1)] end)
+      |> Enum.max()
+
+    max_green * max_blue * max_red
+  end
+
   defp parse_game(""), do: %{}
 
   defp parse_game(game_str) do
@@ -92,5 +120,4 @@ defmodule Day2 do
       is_valid?(rest, result)
     end
   end
-
 end

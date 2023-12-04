@@ -30,7 +30,6 @@ defmodule Day1Test do
       line_111
       |> Day1.replace_num_string()
       |> Day1.replace_num_string()
-      |> IO.inspect()
       |> Day1.line_to_numbers()
     want = 98
     assert got == want

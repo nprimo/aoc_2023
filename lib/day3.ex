@@ -1,5 +1,4 @@
 defmodule Day3 do
-  @symbols ~r/[\@\$\+\*\!\?\#]/
   def solver1(input) do
     rows =
       input
@@ -11,31 +10,34 @@ defmodule Day3 do
       |> Enum.with_index()
       |> get_symbol_positions()
 
-    numbers_with_position =
-      rows
-      |> Enum.with_index()
-      |> get_number_with_position()
-      |> Enum.map(fn num -> is_part_number?(num, symbol_positions) end)
-
-    # filter number (with positions) based on symbol positions
+    rows
+    |> Enum.with_index()
+    |> get_number_with_position()
+    |> Enum.filter(fn num -> is_part_number?(num, symbol_positions) end)
+    |> Enum.map(fn %{"num" => num, "len" => _, "start" => _} -> num end)
+    |> Enum.reduce(0, fn x, acc -> x + acc end)
   end
 
-  def is_part_number?(num_with_position, symbol_positions) do
-    %{"num" => num, "len" => len, "start" => [row, col]} = num_with_position
+  def is_part_number?(
+        %{"len" => len, "num" => _, "start" => [row_start, col_start]},
+        symbol_positions
+      ) do
 
     symbol_positions
-    |> Enum.map(fn [s_row, s_col] ->
-      # same line 
-      if(
-        (row == s_row and (s_col == col - 1 or col + len)) or
-          ((row == s_row - 1 or row == s_row + 1) and s_col >= col - 1 and col <= col + len)
-      ) do
-        true
+    |> Enum.map(fn {row_symb, col_symb} ->
+      if row_symb == row_start do
+        if col_start - 1 == col_symb or col_start + len == col_symb do
+          true
+        end
       else
-        false
+        if row_symb == row_start + 1 or row_symb == row_start - 1 do
+          if(Enum.member?(Range.new(col_start - 1, col_start + len), col_symb)) do
+            true
+          end
+        end
       end
     end)
-    |> IO.inspect()
+    |> Enum.any?(&(&1 == true))
   end
 
   def get_number_with_position(row, numbers_with_position \\ [])
@@ -65,8 +67,9 @@ defmodule Day3 do
   def get_symbol_positions([], symbol_positions), do: symbol_positions
 
   def get_symbol_positions([{row, row_number} | rest], symbol_positions) do
+    # everything but digits or .
     matches =
-      Regex.scan(@symbols, row, return: :index)
+      Regex.scan(~r/[^\d\.]/, row, return: :index)
 
     new_pos =
       matches

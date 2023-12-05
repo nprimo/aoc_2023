@@ -39,14 +39,14 @@ defmodule Day5Test do
 
   test "example part 1" do
     want = 35
-    got = Day5.solver1(@input)
+    got = Day5.Part1.solver(@input)
 
     assert got == want
   end
 
   test "example part2" do
     want = 46
-    got = Day5.solver2(@input)
+    got = Day5.Part2.solver(@input)
 
     assert got == want
   end

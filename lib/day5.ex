@@ -1,7 +1,37 @@
 defmodule Day5 do
-  def solver1(input) do
-    IO.puts("\n")
+  def solver2(input) do
+    [seeds | rest] =
+      input
+      |> String.split("\n\n", trim: true)
 
+    maps =
+      rest
+      |> Enum.map(&parse_map(&1))
+
+    seeds
+    |> parse_seeds2()
+    |> Enum.map(&get_seed_location(&1, maps))
+    |> Enum.min()
+  end
+
+  defp parse_seeds2("seeds: " <> info) do
+    info
+    |> String.split()
+    |> Enum.map(fn str ->
+      case Integer.parse(str) do
+        :error -> nil
+        {num, _} -> num
+      end
+    end)
+    |> Enum.chunk_every(2)
+    |> Enum.map(fn [start, len] ->
+      Range.new(start, start + len - 1)
+      |> Range.to_list()
+    end)
+    |> List.flatten()
+  end
+
+  def solver1(input) do
     [seeds | rest] =
       input
       |> String.split("\n\n", trim: true)

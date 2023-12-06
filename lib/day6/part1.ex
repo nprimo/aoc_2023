@@ -25,6 +25,6 @@ defmodule Day6.Part1 do
   end
 
   def travel_space(t_pressed, total_time) do
-    t_pressed * (total_time - t_pressed)
+    - (t_pressed ** 2) + total_time * t_pressed
   end
 end

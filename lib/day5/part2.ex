@@ -4,7 +4,7 @@ defmodule Day5.Part2 do
       input
       |> String.split("\n\n", trim: true)
 
-    maps =
+    #maps =
       rest
       |> Enum.map(&Day5.Part1.parse_map(&1))
 

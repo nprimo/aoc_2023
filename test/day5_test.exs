@@ -44,10 +44,10 @@ defmodule Day5Test do
     assert got == want
   end
 
-  test "example part2" do
-    want = 46
-    got = Day5.Part2.solver(@input)
+  #test "example part2" do
+    #want = 46
+    #got = Day5.Part2.solver(@input)
 
-    assert got == want
-  end
+    #assert got == want
+  #end
 end

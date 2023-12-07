@@ -9,13 +9,11 @@ defmodule Day7.Part1 do
 
       [hand, String.to_integer(bet)]
     end)
-    |> Enum.map(fn [h, b] -> [h, b, Day7.Hand.get_score(h)] end)
-    |> Enum.map(fn [h, b, score] ->
-      %{bet: b, score: score * 10 ** 7 + Day7.Hand.to_num(h)}
+    |> Enum.sort(fn [curr_h | _], [next_h | _] ->
+      !Day7.Hand.sorter(curr_h, next_h)
     end)
-    |> Enum.sort_by(& &1.score)
     |> Enum.with_index()
-    |> Enum.reduce(0, fn {%{bet: bet, score: _}, idx}, acc ->
+    |> Enum.reduce(0, fn {[_, bet], idx}, acc ->
       bet * (idx + 1) + acc
     end)
   end

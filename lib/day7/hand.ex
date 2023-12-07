@@ -1,4 +1,5 @@
 defmodule Day7.Hand do
+  # Most valuable card to the beginning of the list
   @cards "AKQJT98765432"
   @type_points %{
     five: 6,
@@ -10,7 +11,7 @@ defmodule Day7.Hand do
   def to_num(hand, num \\ 0)
   def to_num("", num), do: num
 
-  def to_num(<<card, rest::binary>>, num) do
+  def to_num(<<card, rest::bits>>, num) do
     curr_pos =
       @cards
       |> String.reverse()
@@ -49,5 +50,21 @@ defmodule Day7.Hand do
         num -> num + acc
       end
     end)
+  end
+
+  def sorter(curr, other) do
+    [curr_score, other_score] =
+      [curr, other]
+      |> Enum.map(&get_score/1)
+
+    [curr_num, other_num] =
+      [curr, other]
+      |> Enum.map(&to_num/1)
+
+    if curr_score == other_score do
+      curr_num >= other_num
+    else
+      curr_score > other_score
+    end
   end
 end

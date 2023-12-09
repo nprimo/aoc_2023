@@ -1,12 +1,12 @@
 defmodule Utils do
-  def get_solution(fname, fun) do
+  def get_solution(fname, fun, part_n \\ 1) do
     solution =
       File.read!(fname)
       |> fun.()
 
     IO.puts(
       [
-        "Solution part 1:\n",
+        "Solution part #{part_n}:\n",
         :green,
         "#{solution}",
         :reset

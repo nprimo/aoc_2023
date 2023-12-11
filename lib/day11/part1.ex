@@ -53,7 +53,7 @@ defmodule Day11.Part1 do
     abs(row_1 - row_2) + abs(col_1 - col_2)
   end
 
-  def get_expanded_galaxy(galaxy_map) do
+  def get_expanded_galaxy(galaxy_map, exp_factor \\ 2) do
     {row_n, col_n} =
       galaxy_map.shape
 
@@ -77,12 +77,12 @@ defmodule Day11.Part1 do
 
     galaxy_expanded_rows =
       Enum.reduce(empty_cols, galaxy_map, fn col_id, galaxy_map ->
-        add_empty_col(galaxy_map, col_id)
+        add_empty_col(galaxy_map, col_id, exp_factor - 1)
       end)
 
     expanded_galaxy =
       Enum.reduce(empty_rows, galaxy_expanded_rows, fn row_id, galaxy_expanded_rows ->
-        add_empty_row(galaxy_expanded_rows, row_id)
+        add_empty_row(galaxy_expanded_rows, row_id, exp_factor - 1)
       end)
 
     expanded_galaxy
@@ -90,9 +90,9 @@ defmodule Day11.Part1 do
     |> Enum.join("\n")
   end
 
-  defp add_empty_row(galaxy_map, row_id) do
+  defp add_empty_row(galaxy_map, row_id, n) do
     empty_row =
-      Nx.broadcast(?., {1, elem(galaxy_map.shape, 1)}, names: [:rows, :cols])
+      Nx.broadcast(?., {n, elem(galaxy_map.shape, 1)}, names: [:rows, :cols])
 
     first_half =
       galaxy_map
@@ -105,9 +105,9 @@ defmodule Day11.Part1 do
     Nx.concatenate([first_half, empty_row, second_half])
   end
 
-  def add_empty_col(galaxy_map, col_id) do
+  def add_empty_col(galaxy_map, col_id, n) do
     empty_col =
-      Nx.broadcast(?., {elem(galaxy_map.shape, 0), 1}, names: [:rows, :cols])
+      Nx.broadcast(?., {elem(galaxy_map.shape, 0), n}, names: [:rows, :cols])
 
     first_half =
       galaxy_map

@@ -19,6 +19,26 @@ defmodule Day13Test do
   #....#..#
   """
 
+  @map_1 """
+  #.##..##.
+  ..#.##.#.
+  ##......#
+  ##......#
+  ..#.##.#.
+  ..##..##.
+  #.#.##.#.
+  """
+
+  @map_2 """
+  #...##..#
+  #....#..#
+  ..##..###
+  #####.##.
+  #####.##.
+  ..##..###
+  #....#..#
+  """
+
   test "example part 1" do
     want = 405
     got = Day13.Part1.solver(@input)
@@ -26,36 +46,16 @@ defmodule Day13Test do
     assert got == want
   end
 
-  test "one map for part 1" do
-    input = """
-    #.##..##.
-    ..#.##.#.
-    ##......#
-    ##......#
-    ..#.##.#.
-    ..##..##.
-    #.#.##.#.
-    """
-
+  test "first map for part 1" do
     want = {5, nil}
-    got = Day13.Part1.get_reflections(input)
+    got = Day13.Part1.get_reflections(@map_1)
 
     assert got == want
   end
 
   test "second map for part 1" do
-    input = """
-    #...##..#
-    #....#..#
-    ..##..###
-    #####.##.
-    #####.##.
-    ..##..###
-    #....#..#
-    """
-
     want = {nil, 4}
-    got = Day13.Part1.get_reflections(input)
+    got = Day13.Part1.get_reflections(@map_2)
 
     assert got == want
   end
@@ -66,6 +66,27 @@ defmodule Day13Test do
 
     want = true
     got = Day13.Part1.is_vertical_reflection?(row, col_n)
+
+    assert got == want
+  end
+
+  test "example for part 2" do
+    want = 400
+    got = Day13.Part2.solver(@input)
+
+    assert got == want
+  end
+
+  test "first map for part 2" do
+    want = {nil, 2}
+    got = Day13.Part2.get_one_smudge_reflection(@map_1)
+
+    assert got == want
+  end
+
+  test "second map for part 2" do
+    want = {nil, 0}
+    got = Day13.Part2.get_one_smudge_reflection(@map_2)
 
     assert got == want
   end

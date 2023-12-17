@@ -6,17 +6,15 @@ defmodule Day16.Part1 do
       |> Enum.map(&String.graphemes/1)
 
     multiple_walks([[{0, 0}, {1, 0}]], map)
+    |> Enum.map(fn [pos, _] -> pos end)
+    |> Enum.uniq()
     |> length()
   end
 
-  def multiple_walks(start_list, map, collective_path \\ [], seen_start_lists \\ [])
-  def multiple_walks([], _, collective_path, _), do: collective_path
+  def multiple_walks(start_list, map, collective_path \\ [])
+  def multiple_walks([], _, collective_path), do: collective_path
 
-  def multiple_walks(start_list, map, collective_path, seen_start_lists) do
-    seen_start_lists =
-      (seen_start_lists ++ start_list)
-      |> Enum.uniq()
-
+  def multiple_walks(start_list, map, collective_path) do
     res =
       start_list
       |> Enum.uniq()
@@ -41,20 +39,20 @@ defmodule Day16.Part1 do
 
     new_start_list =
       res.start_list
-      |> Enum.filter(fn start ->
-        !Enum.any?(seen_start_lists, &(&1 == start))
+      |> Enum.filter(fn [pos, dir] ->
+        !Enum.any?(new_collective_path, fn [seen_pos, seen_dir] ->
+          seen_pos == pos and seen_dir == dir
+        end)
       end)
 
-    multiple_walks(new_start_list, map, new_collective_path, seen_start_lists)
+    multiple_walks(new_start_list, map, new_collective_path)
   end
 
   def walk(curr, dir, map, path \\ [], new_start \\ [])
 
   def walk(curr, dir, map, path, new_start) do
     new_path =
-      # track the combination of curr, dir to avoid endless walk call?
-      (path ++ [curr])
-      |> Enum.uniq()
+      path ++ [[curr, dir]]
 
     next_step = {
       elem(curr, 0) + elem(dir, 0),
@@ -88,9 +86,8 @@ defmodule Day16.Part1 do
       ["\\", {0, val}] -> [{val, 0}, nil]
       ["/", {val, 0}] -> [{0, -val}, nil]
       ["/", {0, val}] -> [{-val, 0}, nil]
-      # need to make them double; spawn 2 new processes?
-      ["|", {_, 0}] -> [{0, 1}, [curr, {0, -1}]]
-      ["-", {0, _}] -> [{1, 0}, [curr, {-1, 0}]]
+      ["|", {_, 0}] -> [{0, -1}, [curr, {0, 1}]]
+      ["-", {0, _}] -> [{-1, 0}, [curr, {1, 0}]]
       _ -> [dir, nil]
     end
   end

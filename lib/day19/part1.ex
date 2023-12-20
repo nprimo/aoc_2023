@@ -48,7 +48,7 @@ defmodule Day19.Part1 do
   def process_rule(part, %{cond: nil, dest: dest}, workflows),
     do: process_part(part, Map.get(workflows, dest), workflows)
 
-  def process_rule(part, %{cond: cond, dest: dest}, workflows) do
+  def process_rule(part, %{cond: cond, dest: dest}, _) do
     <<key::binary-size(1), sign::binary-size(1), num::bits>> = cond
 
     check =

@@ -42,7 +42,6 @@ defmodule Day20.Parser do
           mod
         end
       end)
-      |> dbg()
 
     update_conn_source(rest, modules)
   end

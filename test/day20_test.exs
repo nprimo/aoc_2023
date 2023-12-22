@@ -1,6 +1,7 @@
 defmodule Day20Test do
   use ExUnit.Case
 
+  @tag :skip
   test "example 1 part 1" do
     input = """
     broadcaster -> a, b, c
@@ -16,7 +17,7 @@ defmodule Day20Test do
     assert got == want
   end
 
-  @tag :skip
+  #@tag :skip
   test "example 2 part 2" do
     input = """
     broadcaster -> a

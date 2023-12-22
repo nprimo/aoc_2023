@@ -37,11 +37,12 @@ defmodule Day20.Parser do
       |> Enum.map(fn mod ->
         if mod.name == conn do
           mod
-          |> Map.update(:source, [], fn curr -> curr ++ [source] end)
+          |> Map.update(:source, [], fn curr -> Map.put(curr, source, :l) end)
         else
           mod
         end
       end)
+      |> dbg()
 
     update_conn_source(rest, modules)
   end
@@ -86,7 +87,7 @@ defmodule Day20.Parser do
           name: name,
           target: target,
           type: "conn",
-          source: [],
+          source: %{},
           signal: nil,
           history: []
         }

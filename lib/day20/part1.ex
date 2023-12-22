@@ -12,43 +12,73 @@ defmodule Day20.Part1 do
       |> Enum.map(fn info ->
         GenServer.start_link(
           Module,
-          info |> Map.delete(:name),
+          info,
           name: info.name |> String.to_atom()
         )
 
         info.name |> String.to_atom()
       end)
 
-    propagate_signal([{"broadcaster", :l}])
+    push_button(modules, 3)
 
     final_count(modules)
   end
 
+  def push_button(modules, n \\ 1)
+  def push_button(_, 0), do: nil
+
+  def push_button(modules, n) do
+    propagate_signal([{"broadcaster", :l}], modules)
+
+    IO.puts("\n #{n} \n")
+
+    push_button(modules, n - 1)
+  end
+
   def final_count(modules) do
-    [l, h] =
+    [h, l] =
       modules
       |> Enum.map(&(GenServer.call(&1, :status) |> Map.get(:history)))
       |> List.flatten()
       |> Enum.frequencies()
       |> Map.values()
 
+    dbg([l, h])
     l * h
   end
 
-  def propagate_signal([]), do: nil
+  def propagate_signal([], _), do: nil
 
-  def propagate_signal(target_signal) do
+  def propagate_signal(target_signal, modules) do
     dbg(target_signal)
 
-    new_targets =
+    {conn_targets, rest_targets} =
       target_signal
-      |> Enum.map(fn {target, signal} ->
+      |> Enum.split_with(fn {target, _} ->
         mod_name = target |> String.to_atom()
-        GenServer.call(mod_name, {:signal, signal})
+
+        if Enum.any?(modules, &(&1 == mod_name)) do
+          GenServer.call(mod_name, {:get, :type}) == "conn"
+        end
+      end)
+
+    new_targets =
+      [conn_targets, rest_targets]
+      |> Enum.map(fn targets ->
+        targets
+        |> Enum.map(fn {target, signal} ->
+          mod_name = target |> String.to_atom()
+
+          if Enum.any?(modules, &(&1 == mod_name)) do
+            GenServer.call(mod_name, {:signal, signal})
+          else
+            []
+          end
+        end)
       end)
       |> List.flatten()
 
-    propagate_signal(new_targets)
+    propagate_signal(new_targets, modules)
   end
 end
 
@@ -66,8 +96,13 @@ defmodule Day20.Part1.Module do
   end
 
   @impl true
+  def handle_call({:get, key}, _from, state) do
+    {:reply, state |> Map.get(key), state}
+  end
+
+  @impl true
   def handle_call(:last_signal, _from, state) do
-    last_signal = state |> Map.get(:history) |> List.last()
+    last_signal = state |> Map.get(:signal)
 
     {
       :reply,
@@ -78,8 +113,7 @@ defmodule Day20.Part1.Module do
 
   @impl true
   def handle_call({:signal, signal}, _from, state) do
-    # update history - for all cases
-    new_state =
+    state =
       state
       |> Map.update!(:history, &(&1 ++ [signal]))
 
@@ -87,49 +121,16 @@ defmodule Day20.Part1.Module do
       state
       |> Map.get(:type)
 
-    [new_state, new_signal] =
+    [state, new_signal] =
       case type do
-        "ff" ->
-          if signal == :h do
-            [new_state, nil]
-          else
-            new_state =
-              new_state
-              |> Map.update!(:on, &(!&1))
-
-            if state |> Map.get(:on) do
-              [new_state, :l]
-            else
-              [new_state, :h]
-            end
-          end
-
-        "conn" ->
-          # target =
-          # state
-          # |> Map.get(:target)
-
-          source =
-            state
-            |> Map.get(:source)
-
-          # [target, source]
-          # |> Enum.concat()
-          all_high? =
-            source
-            |> Enum.map(&String.to_atom/1)
-            |> Enum.map(&GenServer.call(&1, :last_signal))
-            |> Enum.all?(&(&1 == :h))
-
-          if all_high? do
-            [new_state, :l]
-          else
-            [new_state, :h]
-          end
-
-        _ ->
-          [new_state, signal]
+        "ff" -> signal_ff(state, signal)
+        "conn" -> signal_cc(state)
+        _ -> [state, signal]
       end
+
+    state =
+      state
+      |> Map.update!(:signal, fn _ -> new_signal end)
 
     targets =
       if new_signal != nil do
@@ -140,6 +141,33 @@ defmodule Day20.Part1.Module do
         []
       end
 
-    {:reply, targets, new_state}
+    {:reply, targets, state}
+  end
+
+  def signal_cc(mod) do
+    source_mod =
+      mod
+      |> Map.get(:source)
+      |> Map.keys()
+
+    all_high? =
+      source_mod
+      |> Enum.map(&String.to_atom/1)
+      |> Enum.map(&GenServer.call(&1, :last_signal))
+      |> Enum.all?(&(&1 == :h))
+
+    if all_high? do
+      [mod, :l]
+    else
+      [mod, :h]
+    end
+  end
+
+  def signal_ff(mod, :h), do: [mod, nil]
+
+  def signal_ff(mod, :l) do
+    new_signal = if(mod |> Map.get(:on), do: :l, else: :h)
+
+    [mod |> Map.update!(:on, &(!&1)), new_signal]
   end
 end

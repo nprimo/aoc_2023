@@ -66,9 +66,8 @@ defmodule Day20.Parser do
         %{
           name: name,
           target: target,
-          type: "broad",
           signal: nil,
-          history: []
+          type: "broad"
         }
 
       "%" ->
@@ -76,9 +75,8 @@ defmodule Day20.Parser do
           name: name,
           target: target,
           on: false,
-          type: "ff",
           signal: nil,
-          history: []
+          type: "ff"
         }
 
       "&" ->
@@ -86,9 +84,8 @@ defmodule Day20.Parser do
           name: name,
           target: target,
           type: "conn",
-          source: %{},
           signal: nil,
-          history: []
+          source: %{}
         }
     end
   end

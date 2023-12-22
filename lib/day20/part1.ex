@@ -20,22 +20,10 @@ defmodule Day20.Part1 do
       end)
 
     push_button(modules, 1000)
+    |> Enum.map(&elem(&1, 2))
     |> Enum.frequencies()
     |> Map.values()
     |> Enum.reduce(1, fn x, acc -> x * acc end)
-  end
-
-  def final_count(modules) do
-    freq =
-      modules
-      |> Enum.map(&(GenServer.call(&1, :status) |> Map.get(:history)))
-      |> List.flatten()
-      |> Enum.frequencies()
-
-    freq
-    |> Map.values()
-    |> Enum.reduce(1, fn x, acc -> x * acc end)
-    |> dbg()
   end
 
   def push_button(modules, n \\ 1, history \\ [])
@@ -54,11 +42,8 @@ defmodule Day20.Part1 do
   def propagate_signal([], _, history), do: history
 
   def propagate_signal(signals, modules, history) do
-    # dbg(signals)
-
     history =
       signals
-      |> Enum.map(&elem(&1, 2))
       |> Enum.concat(history)
 
     {conn_targets, rest_targets} =

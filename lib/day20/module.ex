@@ -17,22 +17,7 @@ defmodule Day20.Module do
   end
 
   @impl true
-  def handle_call(:last_signal, _from, state) do
-    last_signal = state |> Map.get(:signal)
-
-    {
-      :reply,
-      if(!is_nil(last_signal), do: last_signal, else: :l),
-      state
-    }
-  end
-
-  @impl true
   def handle_call({:signal, from, signal}, _from, state) do
-    state =
-      state
-      |> Map.update!(:history, &(&1 ++ [signal]))
-
     type =
       state
       |> Map.get(:type)
@@ -44,12 +29,12 @@ defmodule Day20.Module do
         _ -> [state, signal]
       end
 
-    state =
-      state
-      |> Map.update!(:signal, fn _ -> new_signal end)
-
     targets =
       if new_signal != nil do
+        state =
+          state
+          |> Map.update!(:signal, fn _ -> new_signal end)
+
         state
         |> Map.get(:target)
         |> Enum.map(&{state |> Map.get(:name), &1, new_signal})

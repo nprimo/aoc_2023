@@ -25,23 +25,56 @@ defmodule Day23.Part1 do
 
     end_pos = {end_pos_x, length(map) - 1}
 
-    walk(start_pos, end_pos, map)
-    |> dbg(charlists: :to_lists)
+    res =
+      walk(start_pos, end_pos, map)
+      |> List.flatten()
+
+    {len, path} =
+      res
+      |> Enum.max_by(&elem(&1, 0))
+
+    draw_path(path, map)
+    len - 1
+  end
+
+  def draw_path(path, map) do
+    IO.puts("\n")
+    y_max = length(map) - 1
+
+    x_max = length(Enum.at(map, 0)) - 1
+
+    0..y_max
+    |> Enum.map(fn y ->
+      0..x_max
+      |> Enum.map(fn x ->
+        if Enum.any?(path, &(&1 == {x, y})) do
+          "o"
+        else
+          map
+          |> Enum.at(y)
+          |> Enum.at(x)
+        end
+      end)
+      |> Enum.join()
+    end)
+    |> Enum.join("\n")
+    |> IO.puts()
   end
 
   def walk(pos, end_pos, map, path \\ [])
 
+  def walk(nil, _, _, _), do: nil
+
   def walk(pos, end_pos, map, path) do
-    # update paht with current position (assume position is always good)
+    path = path ++ [pos]
 
-    # case 1 -> pos == end_position -> return path
-
-    # case 2 -> move 
-    # - calculate next positions:
-    #   * it must be inside the map
-    #   * it must not be in the previous path
-    #   * if it's an arrow -> make it only the specific one
-    # - for each new position call funciton
+    if pos == end_pos do
+      {length(path), path}
+    else
+      tile = get_map_pos(pos, map)
+      next_pos = get_next_pos(pos, tile, map, path)
+      for pos <- next_pos, do: walk(pos, end_pos, map, path)
+    end
   end
 
   def get_next_pos(pos, tile, map, path) do
@@ -50,10 +83,10 @@ defmodule Day23.Part1 do
         [{elem(pos, 0) + 1, elem(pos, 1) + 0}]
 
       "<" ->
-        [{elem(pos, 0) + -1, elem(pos, 1) + 0}]
+        [{elem(pos, 0) - 1, elem(pos, 1) + 0}]
 
       "^" ->
-        [{elem(pos, 0) + 0, elem(pos, 1) + -1}]
+        [{elem(pos, 0) + 0, elem(pos, 1) - 1}]
 
       "v" ->
         [{elem(pos, 0) + 0, elem(pos, 1) + 1}]
@@ -71,6 +104,7 @@ defmodule Day23.Part1 do
         end)
     end
     |> Enum.filter(&is_in_map?(&1, map))
+    |> Enum.filter(&(get_map_pos(&1, map) != "#"))
     |> Enum.filter(fn pos -> !Enum.any?(path, &(&1 == pos)) end)
   end
 
